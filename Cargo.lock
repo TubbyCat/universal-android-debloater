@@ -603,6 +603,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "find-crate"
+version = "0.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "59a98bbaacea1c0eb6a0876280051b892eb73594fd90cf3b20e9c817029c57d2"
+dependencies = [
+ "toml",
+]
+
+[[package]]
 name = "flate2"
 version = "1.0.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -972,9 +981,9 @@ dependencies = [
 
 [[package]]
 name = "hashbrown"
-version = "0.12.1"
+version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db0d4cf898abf0081f964436dc980e96670a0f36863e4b83aaacdb65c9d7ccc3"
+checksum = "607c8a29735385251a339424dd462993c0fed8fa09d378f259377df08c126022"
 
 [[package]]
 name = "hermit-abi"
@@ -994,7 +1003,7 @@ checksum = "dfa686283ad6dd069f105e5ab091b04c62850d3e4cf5d67debad1933f55023df"
 [[package]]
 name = "iced"
 version = "0.4.2"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "iced_core",
  "iced_futures",
@@ -1011,16 +1020,17 @@ dependencies = [
 [[package]]
 name = "iced_core"
 version = "0.5.0"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "bitflags",
+ "palette",
  "wasm-timer",
 ]
 
 [[package]]
 name = "iced_futures"
 version = "0.4.1"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "futures",
  "log",
@@ -1031,7 +1041,7 @@ dependencies = [
 [[package]]
 name = "iced_glow"
 version = "0.3.0"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "bytemuck",
  "euclid",
@@ -1046,7 +1056,7 @@ dependencies = [
 [[package]]
 name = "iced_glutin"
 version = "0.3.0"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "glutin",
  "iced_graphics",
@@ -1058,7 +1068,7 @@ dependencies = [
 [[package]]
 name = "iced_graphics"
 version = "0.3.1"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "bytemuck",
  "glam",
@@ -1072,7 +1082,7 @@ dependencies = [
 [[package]]
 name = "iced_native"
 version = "0.5.1"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "iced_core",
  "iced_futures",
@@ -1085,7 +1095,7 @@ dependencies = [
 [[package]]
 name = "iced_pure"
 version = "0.2.2"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "iced_native",
  "iced_style",
@@ -1095,15 +1105,17 @@ dependencies = [
 [[package]]
 name = "iced_style"
 version = "0.4.0"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "iced_core",
+ "lazy_static",
+ "palette",
 ]
 
 [[package]]
 name = "iced_wgpu"
 version = "0.5.1"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "bitflags",
  "bytemuck",
@@ -1122,7 +1134,7 @@ dependencies = [
 [[package]]
 name = "iced_winit"
 version = "0.4.0"
-source = "git+https://github.com/hecrj/iced.git#66eb6263003c1bbedd1fd14d6b12f172d20a6211"
+source = "git+https://github.com/hecrj/iced.git#e053e25d2ccb17f7a162685a106a8bbd915a873f"
 dependencies = [
  "iced_futures",
  "iced_graphics",
@@ -1159,7 +1171,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "10a35a97730320ffe8e2d410b5d3b69279b98d2c14bdb8b70ea89ecf7888d41e"
 dependencies = [
  "autocfg",
- "hashbrown 0.12.1",
+ "hashbrown 0.12.2",
 ]
 
 [[package]]
@@ -1567,9 +1579,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.12.0"
+version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7709cef83f0c1f58f666e746a08b21e0085f7440fa6a29cc194d68aac97a4225"
+checksum = "18a6dbe30758c9f83eb00cbea4ac95966305f5a7772f3f42ebfc7fc7eddbd8e1"
 
 [[package]]
 name = "ordered-float"
@@ -1596,6 +1608,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4fb1e509cfe7a12db2a90bfa057dfcdbc55a347f5da677c506b53dd099cfec9d"
 dependencies = [
  "ttf-parser",
+]
+
+[[package]]
+name = "palette"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9735f7e1e51a3f740bacd5dc2724b61a7806f23597a8736e679f38ee3435d18"
+dependencies = [
+ "approx",
+ "num-traits",
+ "palette_derive",
+ "phf",
+]
+
+[[package]]
+name = "palette_derive"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7799c3053ea8a6d8a1193c7ba42f534e7863cf52e378a7f90406f4a645d33bad"
+dependencies = [
+ "find-crate",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -1653,6 +1689,50 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4fd5641d01c8f18a23da7b6fe29298ff4b55afcccdf78973b24cf3175fee32e"
 
 [[package]]
+name = "phf"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b2ac8b67553a7ca9457ce0e526948cad581819238f4a9d1ea74545851fa24f37"
+dependencies = [
+ "phf_macros",
+ "phf_shared",
+ "proc-macro-hack",
+]
+
+[[package]]
+name = "phf_generator"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d43f3220d96e0080cc9ea234978ccd80d904eafb17be31bb0f76daaea6493082"
+dependencies = [
+ "phf_shared",
+ "rand",
+]
+
+[[package]]
+name = "phf_macros"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b706f5936eb50ed880ae3009395b43ed19db5bff2ebd459c95e7bf013a89ab86"
+dependencies = [
+ "phf_generator",
+ "phf_shared",
+ "proc-macro-hack",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "phf_shared"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a68318426de33640f02be62b4ae8eb1261be2efbc337b60c54d845bf4484e0d9"
+dependencies = [
+ "siphasher",
+]
+
+[[package]]
 name = "pin-project-lite"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1685,6 +1765,12 @@ dependencies = [
  "thiserror",
  "toml",
 ]
+
+[[package]]
+name = "proc-macro-hack"
+version = "0.5.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dbf0c48bc1d91375ae5c3cd81e3722dff1abcf81a30960240640d223f59fe0e5"
 
 [[package]]
 name = "proc-macro2"
@@ -1811,9 +1897,9 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.5.6"
+version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d83f127d94bdbcda4c8cc2e50f6f84f4b611f69c902699ca385a39c3a75f9ff1"
+checksum = "4c4eb3267174b8c6c2f654116623910a0fef09c4753f8dd83db29c48a0df988b"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -1822,9 +1908,9 @@ dependencies = [
 
 [[package]]
 name = "regex-syntax"
-version = "0.6.26"
+version = "0.6.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49b3de9ec5dc0a3417da371aab17d729997c15010e7fd24ff707773a33bddb64"
+checksum = "a3f87b73ce11b1619a3c6332f45341e0047173771e8b8b73f87bfeefb7b56244"
 
 [[package]]
 name = "renderdoc-sys"
@@ -1942,6 +2028,12 @@ dependencies = [
  "lazy_static",
  "libc",
 ]
+
+[[package]]
+name = "siphasher"
+version = "0.3.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7bd3e3206899af3f8b12af284fafc038cc1dc2b41d1b89dd17297221c5d225de"
 
 [[package]]
 name = "slab"
