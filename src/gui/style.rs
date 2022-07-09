@@ -1,145 +1,83 @@
-use crate::core::theme::ColorPalette;
+use crate::core::theme::Theme;
 use iced::{button, checkbox, container, pick_list, scrollable, text_input, Background, Color};
 
-pub struct Content(pub ColorPalette);
-impl container::StyleSheet for Content {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(self.0.base.background)),
-            text_color: Some(self.0.bright.surface),
-            ..container::Style::default()
-        }
-    }
+enum Container {
+    Content,
+    NavigationContainer
 }
 
-pub struct NavigationContainer(pub ColorPalette);
-impl container::StyleSheet for NavigationContainer {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(self.0.base.foreground)),
-            text_color: Some(self.0.bright.surface),
-            ..container::Style::default()
-        }
-    }
-}
-
-pub struct PrimaryButton(pub ColorPalette);
-impl button::StyleSheet for PrimaryButton {
-    fn active(&self) -> button::Style {
-        button::Style {
-            border_color: Color {
-                a: 0.5,
-                ..self.0.bright.primary
+impl container::Appearance for Theme {
+    fn style(&self, style: Container) -> container::Appearance {
+        match style {
+           Content => container::Appearance {
+                background: Some(Background::Color(self.0.base.background)),
+                text_color: Some(self.0.bright.surface),
+                ..container::Appearance::default()
             },
-            border_width: 1.0,
-            border_radius: 2.0,
-            text_color: self.0.bright.primary,
-            ..button::Style::default()
-        }
-    }
-
-    fn hovered(&self) -> button::Style {
-        button::Style {
-            background: Some(Background::Color(Color {
-                a: 0.25,
-                ..self.0.normal.surface
-            })),
-            text_color: self.0.bright.primary,
-            ..self.active()
+            NavigationContainer => container::Appearance {
+                background: Some(Background::Color(self.0.base.foreground)),
+                text_color: Some(self.0.bright.surface),
+                ..container::Appearance::default()
+            }
         }
     }
 }
 
-pub struct UnavailableButton(pub ColorPalette);
-impl button::StyleSheet for UnavailableButton {
-    fn active(&self) -> button::Style {
-        button::Style {
-            border_color: Color {
-                a: 0.5,
-                ..self.0.bright.error
+
+enum Button {
+    Primary,
+    Unavailable,
+    SelfUpdate,
+    RefreshButton,
+    UninstallPackage,
+    RestorePackage
+}
+
+
+impl button::StyleSheet for Theme {
+    fn active(&self, style: Button) -> button::Style {
+        match style {
+            Primary => button::Style {
+                border_color: Color {
+                    a: 0.5,
+                    ..self.0.bright.primary
+                },
+                border_width: 1.0,
+                border_radius: 2.0,
+                text_color: self.0.bright.primary,
+                ..button::Style::default()
             },
-            border_width: 1.0,
-            border_radius: 2.0,
-            text_color: self.0.bright.error,
-            ..button::Style::default()
-        }
-    }
-
-    fn hovered(&self) -> button::Style {
-        button::Style {
-            background: Some(Background::Color(Color {
-                a: 0.25,
-                ..self.0.normal.primary
-            })),
-            text_color: self.0.normal.error,
-            ..self.active()
-        }
-    }
-}
-
-pub struct SelfUpdateButton(pub ColorPalette);
-impl button::StyleSheet for SelfUpdateButton {
-    fn active(&self) -> button::Style {
-        button::Style {
-            border_color: Color {
-                a: 0.5,
-                ..self.0.bright.secondary
+            Unavailable => button::Style {
+                border_color: Color {
+                    a: 0.5,
+                    ..self.0.bright.error
+                },
+                border_width: 1.0,
+                border_radius: 2.0,
+                text_color: self.0.bright.error,
+                ..button::Style::default()
             },
-            border_width: 1.0,
-            border_radius: 2.0,
-            text_color: self.0.bright.secondary,
-            ..button::Style::default()
-        }
-    }
-
-    fn hovered(&self) -> button::Style {
-        button::Style {
-            background: Some(Background::Color(Color {
-                a: 0.25,
-                ..self.0.normal.surface
-            })),
-            text_color: self.0.bright.secondary,
-            ..self.active()
-        }
-    }
-}
-
-pub struct RefreshButton(pub ColorPalette);
-impl button::StyleSheet for RefreshButton {
-    fn active(&self) -> button::Style {
-        button::Style {
-            border_color: Color {
-                a: 0.5,
-                ..self.0.bright.primary
+            SelfUpdate => button::Style {
+                border_color: Color {
+                    a: 0.5,
+                    ..self.0.bright.secondary
+                },
+                border_width: 1.0,
+                border_radius: 2.0,
+                text_color: self.0.bright.secondary,
+                ..button::Style::default()
             },
-            border_width: 1.0,
-            border_radius: 2.0,
-            text_color: self.0.bright.primary,
-            ..button::Style::default()
-        }
-    }
-
-    fn hovered(&self) -> button::Style {
-        button::Style {
-            background: Some(Background::Color(Color {
-                a: 0.25,
-                ..self.0.normal.surface
-            })),
-            text_color: self.0.bright.primary,
-            ..self.active()
-        }
-    }
-}
-
-pub enum PackageButton {
-    Uninstall(ColorPalette),
-    Restore(ColorPalette),
-}
-
-impl button::StyleSheet for PackageButton {
-    fn active(&self) -> button::Style {
-        match self {
-            Self::Uninstall(palette) => button::Style {
+            RefreshButton => button::Style {
+                border_color: Color {
+                    a: 0.5,
+                    ..self.0.bright.primary
+                },
+                border_width: 1.0,
+                border_radius: 2.0,
+                text_color: self.0.bright.primary,
+                ..button::Style::default()
+            },
+            UninstallPackage => button::Style {
                 border_color: Color {
                     a: 0.5,
                     ..palette.bright.error
@@ -149,7 +87,7 @@ impl button::StyleSheet for PackageButton {
                 text_color: palette.bright.error,
                 ..button::Style::default()
             },
-            Self::Restore(palette) => button::Style {
+            RestorePackage => button::Style {
                 border_color: Color {
                     a: 0.5,
                     ..palette.bright.secondary
@@ -158,13 +96,45 @@ impl button::StyleSheet for PackageButton {
                 border_radius: 2.0,
                 text_color: palette.bright.secondary,
                 ..button::Style::default()
-            },
+            }
         }
     }
 
-    fn hovered(&self) -> button::Style {
-        match self {
-            Self::Restore(palette) => button::Style {
+    fn hovered(&self, style: Button) -> button::Style {
+        match style {
+            Primary => button::Style {
+                background: Some(Background::Color(Color {
+                    a: 0.25,
+                    ..self.0.normal.surface
+                })),
+                text_color: self.0.bright.primary,
+                ..self.active()
+            },
+            Unavailable => button::Style {
+                background: Some(Background::Color(Color {
+                    a: 0.25,
+                    ..self.0.normal.primary
+                })),
+                text_color: self.0.normal.error,
+                ..self.active()
+            },
+            SelfUpdate => button::Style {
+                background: Some(Background::Color(Color {
+                    a: 0.25,
+                    ..self.0.normal.surface
+                })),
+                text_color: self.0.bright.secondary,
+                ..self.active()
+            },
+            RefreshButton => button::Style {
+                background: Some(Background::Color(Color {
+                    a: 0.25,
+                    ..self.0.normal.surface
+                })),
+                text_color: self.0.bright.primary,
+                ..self.active()
+            },
+            UninstallPackage => button::Style {
                 background: Some(Background::Color(Color {
                     a: 0.25,
                     ..palette.normal.primary
@@ -172,7 +142,7 @@ impl button::StyleSheet for PackageButton {
                 text_color: palette.bright.primary,
                 ..self.active()
             },
-            Self::Uninstall(palette) => button::Style {
+            RestorePackage => button::Style {
                 background: Some(Background::Color(Color {
                     a: 0.25,
                     ..palette.normal.primary
@@ -180,12 +150,12 @@ impl button::StyleSheet for PackageButton {
                 text_color: palette.bright.primary,
                 ..self.active()
             },
-        }
+        }   
     }
 
-    fn disabled(&self) -> button::Style {
-        match self {
-            Self::Restore(palette) => button::Style {
+    fn disabled(&self, style: Button) -> button::Style {
+        match style {
+            RestorePackage => button::Style {
                 background: Some(Background::Color(Color {
                     a: 0.05,
                     ..palette.normal.primary
@@ -196,7 +166,7 @@ impl button::StyleSheet for PackageButton {
                 },
                 ..self.active()
             },
-            Self::Uninstall(palette) => button::Style {
+            UninstallPackage => button::Style {
                 background: Some(Background::Color(Color {
                     a: 0.01,
                     ..palette.bright.error
@@ -207,9 +177,11 @@ impl button::StyleSheet for PackageButton {
                 },
                 ..self.active()
             },
+            _ => button::Style::Default
         }
     }
 }
+
 
 pub enum PackageRow {
     Normal(ColorPalette),
