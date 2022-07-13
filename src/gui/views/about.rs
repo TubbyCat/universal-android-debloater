@@ -1,10 +1,11 @@
 use crate::core::utils::{last_modified_date, open_url};
-use crate::gui::style;
 use crate::gui::views::settings::Settings;
+use crate::core::theme::Theme;
 use crate::CACHE_DIR;
 use iced::pure::{button, column, container, row, text, Element};
 use iced::{Alignment, Length, Space};
 use std::path::PathBuf;
+use crate::gui::style;
 
 #[cfg(feature = "self-update")]
 use crate::core::update::SelfUpdateStatus;
@@ -33,7 +34,7 @@ impl About {
             }
         }
     }
-    pub fn view(&mut self, settings: &Settings) -> Element<Message> {
+    pub fn view(&mut self, settings: &Settings) -> Element<Message, Theme> {
         let about_text = text(
             "Universal Android Debloater (UAD) is a Free and Open-Source community project aiming at simplifying \
             the removal of pre-installed apps on any Android device.",
@@ -42,23 +43,23 @@ impl About {
         let descr_container = container(about_text)
             .width(Length::Fill)
             .padding(25)
-            .style(style::NavigationContainer(settings.theme.palette));
+            .style(style::Container::Navigation);
 
         let date = last_modified_date(CACHE_DIR.join("uad_lists.json"));
         let uad_list_text =
             text(format!("Documentation: v{}", date.format("%Y%m%d"))).width(Length::Units(250));
         let last_update_text = text(settings.list_update_state.to_string())
-            .color(settings.theme.palette.normal.surface);
+            .style(Theme::lupin());
         let uad_lists_btn = button("Update")
             .on_press(Message::UpdateUadLists)
             .padding(5)
-            .style(style::PrimaryButton(settings.theme.palette));
+            .style(style::Button::Primary);
 
         #[cfg(feature = "self-update")]
         let self_update_btn = button("Update")
             .on_press(Message::DoSelfUpdate)
             .padding(5)
-            .style(style::PrimaryButton(settings.theme.palette));
+            .style(style::Button::Primary);
 
         #[cfg(feature = "self-update")]
         let uad_version_text =
@@ -84,7 +85,7 @@ impl About {
 
         #[cfg(feature = "self-update")]
         let last_self_update_text =
-            text(self_update_text).color(settings.theme.palette.normal.surface);
+            text(self_update_text).style(style::Text::Theme::lupin());
 
         #[cfg(feature = "self-update")]
         let self_update_row = row()
@@ -120,33 +121,33 @@ impl About {
             .width(Length::Fill)
             .center_x()
             .padding(10)
-            .style(style::NavigationContainer(settings.theme.palette));
+            .style(style::Container::Navigation);
 
         let website_btn = button("Github page")
             .on_press(Message::UrlPressed(PathBuf::from(
                 "https://github.com/0x192/universal-android-debloater",
             )))
             .padding(5)
-            .style(style::PrimaryButton(settings.theme.palette));
+            .style(style::Button::Primary);
 
         let issue_btn = button("Have an issue?")
             .on_press(Message::UrlPressed(PathBuf::from(
                 "https://github.com/0x192/universal-android-debloater/issues",
             )))
             .padding(5)
-            .style(style::PrimaryButton(settings.theme.palette));
+            .style(style::Button::Primary);
 
         let log_btn = button("Locate the logfiles")
             .on_press(Message::UrlPressed(CACHE_DIR.to_path_buf()))
             .padding(5)
-            .style(style::PrimaryButton(settings.theme.palette));
+            .style(style::Button::Primary);
 
         let wiki_btn = button("Wiki")
             .on_press(Message::UrlPressed(PathBuf::from(
                 "https://github.com/0x192/universal-android-debloater/wiki",
             )))
             .padding(5)
-            .style(style::PrimaryButton(settings.theme.palette));
+            .style(style::Button::Primary);
 
         let row = row()
             .spacing(20)
@@ -168,7 +169,7 @@ impl About {
             .width(Length::Fill)
             .height(Length::Fill)
             .padding(10)
-            .style(style::Content(settings.theme.palette))
+            .style(style::Container::Content)
             .into()
     }
 }

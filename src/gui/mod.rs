@@ -13,7 +13,7 @@ use iced::{
     window::Settings as Window, Alignment, Application, Command, Element, Font, Length, Settings,
     Space,
 };
-
+use crate::core::theme::Theme;
 use std::collections::HashMap;
 use std::env;
 use std::path::PathBuf;
@@ -78,6 +78,7 @@ pub enum Message {
 }
 
 impl Application for UadGui {
+    type Theme = Theme;
     type Executor = iced::executor::Default;
     type Message = Message;
     type Flags = ();
@@ -91,6 +92,10 @@ impl Application for UadGui {
                 Command::perform(Self::send_self_update_message(), Message::SettingsAction),
             ]),
         )
+    }
+
+    fn theme(&self) -> Theme {
+        Theme::lupin()
     }
 
     fn title(&self) -> String {
@@ -307,16 +312,16 @@ impl Application for UadGui {
         }
     }
 
-    fn view(&mut self) -> Element<Self::Message> {
+    fn view(&mut self) -> Element<Self::Message, Self::Theme> {
         let apps_refresh_btn = button(refresh_icon())
             .on_press(Message::RefreshButtonPressed)
             .padding(5)
-            .style(style::RefreshButton(self.settings_view.theme.palette));
+            .style(style::Button::Refresh);
 
         let reboot_btn = button("Reboot")
             .on_press(Message::RebootButtonPressed)
             .padding(5)
-            .style(style::RefreshButton(self.settings_view.theme.palette));
+            .style(style::Button::Refresh);
 
         let uad_version_text = if let Some(r) = &self.settings_view.self_update_state.latest_release
         {
@@ -344,30 +349,30 @@ impl Application for UadGui {
             button("Update")
                 .on_press(Message::AboutAction(AboutMessage::DoSelfUpdate))
                 .padding(5)
-                .style(style::SelfUpdateButton(self.settings_view.theme.palette))
+                .style(style::Button::SelfUpdate);
         } else {
             button("Apps")
                 .on_press(Message::AppsPress)
                 .padding(5)
-                .style(style::PrimaryButton(self.settings_view.theme.palette))
+                .style(style::Button::Primary);
         };
 
         let about_btn = button("About")
             .on_press(Message::AboutPressed)
             .padding(5)
-            .style(style::PrimaryButton(self.settings_view.theme.palette));
+            .style(style::Button::Primary);
 
         let settings_btn = button("Settings")
             .on_press(Message::SettingsPressed)
             .padding(5)
-            .style(style::PrimaryButton(self.settings_view.theme.palette));
+            .style(style::Button::Primary);
 
         let device_picklist = pick_list(
             &self.device_list,
             self.selected_device.clone(),
             Message::DeviceSelected,
         )
-        .style(style::PickList(self.settings_view.theme.palette));
+        .style(style::PickList::Base);
 
         let device_list_text = match self.apps_view.state {
             ListState::Loading(ListLoadingState::FindingPhones) => {
@@ -406,7 +411,7 @@ impl Application for UadGui {
         let navigation_container = container(row)
             .width(Length::Fill)
             .padding(10)
-            .style(style::NavigationContainer(self.settings_view.theme.palette));
+            .style(style::Container::Navigation);
 
         let main_container = match self.view {
             View::List => self

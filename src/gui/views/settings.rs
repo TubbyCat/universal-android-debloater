@@ -1,10 +1,10 @@
 use crate::core::config::Config;
 use crate::core::sync::{get_android_sdk, Phone as CorePhone};
 use crate::core::theme::Theme;
+use crate::gui::style;
 use crate::core::uad_lists::UadListState;
 use crate::core::update::{Release, SelfUpdateState, SelfUpdateStatus};
 use crate::core::utils::{open_url, string_to_theme};
-use crate::gui::style;
 use crate::IN_FILE_CONFIGURATION;
 
 use iced::pure::widget::Text;
@@ -103,11 +103,11 @@ impl Settings {
         }
     }
 
-    pub fn view(&mut self, phone: &CorePhone) -> Element<Message> {
+    pub fn view(&mut self, phone: &CorePhone) -> Element<Message, Theme> {
         let general_category_text = text("General").size(25);
 
         let theme_picklist = pick_list(Theme::all(), Some(self.theme.clone()), Message::ApplyTheme)
-            .style(style::PickList(self.theme.palette));
+            .style(style::PickList::Base);
 
         let uad_category_text = text("Non-persistent settings").size(25);
 
@@ -121,7 +121,7 @@ impl Settings {
             self.phone.expert_mode,
             Message::ExpertMode,
         )
-        .style(style::SettingsCheckBox::Enabled(self.theme.palette));
+        .style(style::CheckBox::SettingsEnabled);
 
         let multi_user_mode_descr =
             text("Disabling this setting will typically prevent affecting your work profile")
@@ -133,7 +133,7 @@ impl Settings {
             self.phone.multi_user_mode,
             Message::MultiUserMode,
         )
-        .style(style::SettingsCheckBox::Enabled(self.theme.palette));
+        .style(style::CheckBox::SettingsEnabled);
 
         let disable_color = if phone.android_sdk >= 23 {
             self.theme.palette.normal.surface
@@ -142,9 +142,9 @@ impl Settings {
         };
 
         let disable_checkbox_style = if phone.android_sdk >= 23 {
-            style::SettingsCheckBox::Enabled(self.theme.palette)
+            style::CheckBox::SettingsEnabled
         } else {
-            style::SettingsCheckBox::Disabled(self.theme.palette)
+            style::CheckBox::SettingsDisabled
         };
 
         let disable_mode_descr =
@@ -162,7 +162,7 @@ impl Settings {
                     why-is-the-disable-mode-setting-not-available-for-my-device",
             )))
             .height(Length::Units(22))
-            .style(style::UnavailableButton(self.theme.palette));
+            .style(style::Button::Unavailable);
 
         // Disabling package without root isn't really possible before Android Oreo (8.0)
         // see https://github.com/0x192/universal-android-debloater/wiki/ADB-reference
@@ -207,7 +207,7 @@ impl Settings {
             .padding(10)
             .width(Length::Fill)
             .height(Length::Fill)
-            .style(style::Content(self.theme.palette))
+            .style(style::Container::Content)
             .into()
     }
 }

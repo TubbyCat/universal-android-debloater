@@ -1,8 +1,8 @@
 use crate::core::sync::Phone;
 use crate::core::uad_lists::{PackageState, Removal, UadList};
-
-use crate::gui::style;
+use crate::core::theme::Theme;
 use crate::gui::views::settings::Settings;
+use crate::gui::style;
 
 use iced::pure::{button, checkbox, row, text, Element};
 use iced::{alignment, Alignment, Command, Length, Space};
@@ -50,7 +50,7 @@ impl PackageRow {
         Command::none()
     }
 
-    pub fn view(&mut self, settings: &Settings, _phone: &Phone) -> Element<Message> {
+    pub fn view(&mut self, settings: &Settings, _phone: &Phone) -> Element<Message, Theme> {
         //let trash_svg = format!("{}/resources/assets/trash.svg", env!("CARGO_MANIFEST_DIR"));
         //let restore_svg = format!("{}/resources/assets/rotate.svg", env!("CARGO_MANIFEST_DIR"));
         let button_style;
@@ -65,19 +65,19 @@ impl PackageRow {
                 } else {
                     "Uninstall"
                 };
-                button_style = style::PackageButton::Uninstall(settings.theme.palette);
+                button_style = style::Button::UninstallPackage;
             }
             PackageState::Disabled => {
                 action_text = "Enable";
-                button_style = style::PackageButton::Restore(settings.theme.palette);
+                button_style = style::Button::RestorePackage;
             }
             PackageState::Uninstalled => {
                 action_text = "Restore";
-                button_style = style::PackageButton::Restore(settings.theme.palette);
+                button_style = style::Button::RestorePackage;
             }
             PackageState::All => {
                 action_text = "Error";
-                button_style = style::PackageButton::Restore(settings.theme.palette);
+                button_style = style::Button::RestorePackage;
                 warn!("Incredible! Something impossible happened!");
             }
         }
@@ -87,7 +87,7 @@ impl PackageRow {
             || settings.phone.expert_mode
         {
             selection_checkbox = checkbox("", self.selected, Message::ToggleSelection)
-                .style(style::SelectionCheckBox::Enabled(settings.theme.palette));
+                .style(style::CheckBox::SelectionEnabled);
 
             action_btn = button(
                 text(action_text)
@@ -97,7 +97,7 @@ impl PackageRow {
             .on_press(Message::ActionPressed);
         } else {
             selection_checkbox = checkbox("", self.selected, Message::ToggleSelection)
-                .style(style::SelectionCheckBox::Disabled(settings.theme.palette));
+                .style(style::CheckBox::SelectionDisabled);
 
             action_btn = button(
                 text(action_text)
@@ -117,9 +117,9 @@ impl PackageRow {
                 )
                 .padding(8)
                 .style(if self.current {
-                    style::PackageRow::Current(settings.theme.palette)
+                    style::Button::SelectedPackage
                 } else {
-                    style::PackageRow::Normal(settings.theme.palette)
+                    style::Button::NormalPackage
                 })
                 .width(Length::Fill)
                 .on_press(Message::PackagePressed),

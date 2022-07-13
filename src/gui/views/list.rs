@@ -1,13 +1,14 @@
 use crate::core::sync::{action_handler, Phone, User};
+use crate::core::theme::Theme;
 use crate::core::uad_lists::{
     load_debloat_lists, Opposite, Package, PackageState, Removal, UadList, UadListState,
 };
 use crate::core::utils::{
     export_selection, fetch_packages, import_selection, perform_commands, update_selection_count,
 };
-use crate::gui::style;
 use std::collections::HashMap;
 use std::env;
+use crate::gui::style;
 
 use crate::gui::views::settings::Settings;
 use crate::gui::widgets::package_row::{Message as RowMessage, PackageRow};
@@ -361,7 +362,7 @@ impl List {
         }
     }
 
-    pub fn view(&mut self, settings: &Settings, phone: &Phone) -> Element<Message> {
+    pub fn view(&mut self, settings: &Settings, phone: &Phone) -> Element<Message, Theme> {
         match self.state {
             State::Loading(LoadingState::DownloadingList) => {
                 let text = "Downloading latest UAD lists from Github. Please wait...";
@@ -386,7 +387,7 @@ impl List {
                     Message::SearchInputChanged,
                 )
                 .padding(5)
-                .style(style::SearchInput(settings.theme.palette));
+                .style(style::TextInput::Base);
 
                 // let package_amount = text(format!("{} packages found", packages.len()));
 
@@ -396,27 +397,27 @@ impl List {
                     Message::UserSelected,
                 )
                 .width(Length::Units(85))
-                .style(style::PickList(settings.theme.palette));
+                .style(style::PickList::Base);
 
                 let divider = Space::new(Length::Fill, Length::Shrink);
 
                 let list_picklist =
                     pick_list(&UadList::ALL[..], self.selected_list, Message::ListSelected)
-                        .style(style::PickList(settings.theme.palette));
+                        .style(style::PickList::Base);
 
                 let package_state_picklist = pick_list(
                     &PackageState::ALL[..],
                     self.selected_package_state,
                     Message::PackageStateSelected,
                 )
-                .style(style::PickList(settings.theme.palette));
+                .style(style::PickList::Base);
 
                 let removal_picklist = pick_list(
                     &Removal::ALL[..],
                     self.selected_removal,
                     Message::RemovalSelected,
                 )
-                .style(style::PickList(settings.theme.palette));
+                .style(style::PickList::Base);
 
                 let control_panel = row()
                     .width(Length::Fill)
@@ -453,18 +454,18 @@ impl List {
                 let packages_scrollable = scrollable(packages)
                     .scrollbar_margin(2)
                     .height(Length::FillPortion(6))
-                    .style(style::Scrollable(settings.theme.palette));
+                    .style(style::Scrollable::Packages);
 
                 // let mut packages_v: Vec<&str> = self.packages.lines().collect();
 
                 let description_scroll = scrollable(text(&self.description))
                     .scrollbar_margin(7)
-                    .style(style::DescriptionScrollable(settings.theme.palette));
+                    .style(style::Scrollable::Description);
 
                 let description_panel = container(description_scroll)
                     .height(Length::FillPortion(2))
                     .width(Length::Fill)
-                    .style(style::Description(settings.theme.palette));
+                    .style(style::Container::Description);
 
                 let restore_action = if settings.phone.disable_mode {
                     "Enable/Restore"
@@ -484,7 +485,7 @@ impl List {
                 )))
                 .on_press(Message::ApplyActionOnSelection(Action::Restore))
                 .padding(5)
-                .style(style::PrimaryButton(settings.theme.palette));
+                .style(style::Button::Primary);
 
                 let apply_remove_selection = button(text(format!(
                     "{} selection ({})",
@@ -492,17 +493,17 @@ impl List {
                 )))
                 .on_press(Message::ApplyActionOnSelection(Action::Remove))
                 .padding(5)
-                .style(style::PrimaryButton(settings.theme.palette));
+                .style(style::Button::Primary);
 
                 let select_all_btn = button("Select all")
                     .padding(5)
                     .on_press(Message::ToggleAllSelected(true))
-                    .style(style::PrimaryButton(settings.theme.palette));
+                    .style(style::Button::Primary);
 
                 let unselect_all_btn = button("Unselect all")
                     .padding(5)
                     .on_press(Message::ToggleAllSelected(false))
-                    .style(style::PrimaryButton(settings.theme.palette));
+                    .style(style::Button::Primary);
 
                 let export_selection_btn = button(text(format!(
                     "Export current selection ({})",
@@ -510,7 +511,7 @@ impl List {
                 )))
                 .padding(5)
                 .on_press(Message::ExportSelectionPressed)
-                .style(style::PrimaryButton(settings.theme.palette));
+                .style(style::Button::Primary);
 
                 let action_row = row()
                     .width(Length::Fill)
@@ -535,7 +536,7 @@ impl List {
                 container(content)
                     .height(Length::Fill)
                     .padding(10)
-                    .style(style::Content(settings.theme.palette))
+                    .style(style::Container::Content)
                     .into()
             }
         }
@@ -585,7 +586,7 @@ fn waiting_view<'a>(settings: &Settings, displayed_text: &str, btn: bool) -> Ele
         let no_internet_btn = button("No internet?")
             .padding(5)
             .on_press(Message::InitUadList(false))
-            .style(style::PrimaryButton(settings.theme.palette));
+            .style(style::Button::Primary);
 
         column()
             .spacing(10)
@@ -604,6 +605,6 @@ fn waiting_view<'a>(settings: &Settings, displayed_text: &str, btn: bool) -> Ele
         .height(Length::Fill)
         .center_y()
         .center_x()
-        .style(style::Content(settings.theme.palette))
+        .style(style::Container::Content)
         .into()
 }
