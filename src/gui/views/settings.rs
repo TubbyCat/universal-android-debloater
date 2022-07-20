@@ -1,15 +1,14 @@
 use crate::core::config::Config;
 use crate::core::sync::{get_android_sdk, Phone as CorePhone};
 use crate::core::theme::Theme;
-use crate::gui::style;
 use crate::core::uad_lists::UadListState;
 use crate::core::update::{Release, SelfUpdateState, SelfUpdateStatus};
 use crate::core::utils::{open_url, string_to_theme};
+use crate::gui::style;
 use crate::IN_FILE_CONFIGURATION;
 
-use iced::pure::widget::Text;
 use iced::pure::{button, checkbox, column, container, pick_list, row, text, Element};
-use iced::{Length, Space};
+use iced::{Length, Renderer, Space};
 use std::path::PathBuf;
 
 #[derive(Debug, Clone)]
@@ -103,18 +102,15 @@ impl Settings {
         }
     }
 
-    pub fn view(&mut self, phone: &CorePhone) -> Element<Message, Theme> {
+    pub fn view(&mut self, phone: &CorePhone) -> Element<Message, Renderer<Theme>> {
         let general_category_text = text("General").size(25);
 
-        let theme_picklist = pick_list(Theme::all(), Some(self.theme.clone()), Message::ApplyTheme)
-            .style(style::PickList::Base);
+        let theme_picklist = pick_list(Theme::all(), Some(self.theme.clone()), Message::ApplyTheme);
 
         let uad_category_text = text("Non-persistent settings").size(25);
 
         let expert_mode_descr =
-            text("Most of unsafe packages are known to bootloop the device if removed.")
-                .size(15)
-                .color(self.theme.palette.normal.surface);
+            text("Most of unsafe packages are known to bootloop the device if removed.").size(15);
 
         let expert_mode_checkbox = checkbox(
             "Allow to uninstall packages marked as \"unsafe\" (I KNOW WHAT I AM DOING)",
@@ -125,8 +121,7 @@ impl Settings {
 
         let multi_user_mode_descr =
             text("Disabling this setting will typically prevent affecting your work profile")
-                .size(15)
-                .color(self.theme.palette.normal.surface);
+                .size(15);
 
         let multi_user_mode_checkbox = checkbox(
             "Affect all the users of the phone (not only the selected user)",
@@ -135,7 +130,7 @@ impl Settings {
         )
         .style(style::CheckBox::SettingsEnabled);
 
-        let disable_color = if phone.android_sdk >= 23 {
+        let _disable_color = if phone.android_sdk >= 23 {
             self.theme.palette.normal.surface
         } else {
             self.theme.palette.normal.primary
@@ -149,12 +144,10 @@ impl Settings {
 
         let disable_mode_descr =
             text("In some cases, it can be better to disable a package instead of uninstalling it")
-                .size(15)
-                .color(disable_color);
+                .size(15);
 
-        let _unavailable_text = Text::new("[Unavailable before Android 8.0]")
-            .size(16)
-            .color(self.theme.palette.bright.error);
+        /*        let _unavailable_text = text("[Unavailable before Android 8.0]")
+        .size(16);*/
 
         let unavailable_btn = button(text("Unavailable").size(13))
             .on_press(Message::UrlPressed(PathBuf::from(

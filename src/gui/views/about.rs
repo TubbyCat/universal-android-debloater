@@ -1,11 +1,11 @@
-use crate::core::utils::{last_modified_date, open_url};
-use crate::gui::views::settings::Settings;
 use crate::core::theme::Theme;
+use crate::core::utils::{last_modified_date, open_url};
+use crate::gui::style;
+use crate::gui::views::settings::Settings;
 use crate::CACHE_DIR;
 use iced::pure::{button, column, container, row, text, Element};
-use iced::{Alignment, Length, Space};
+use iced::{Alignment, Length, Renderer, Space};
 use std::path::PathBuf;
-use crate::gui::style;
 
 #[cfg(feature = "self-update")]
 use crate::core::update::SelfUpdateStatus;
@@ -34,7 +34,7 @@ impl About {
             }
         }
     }
-    pub fn view(&mut self, settings: &Settings) -> Element<Message, Theme> {
+    pub fn view(&mut self, settings: &Settings) -> Element<Message, Renderer<Theme>> {
         let about_text = text(
             "Universal Android Debloater (UAD) is a Free and Open-Source community project aiming at simplifying \
             the removal of pre-installed apps on any Android device.",
@@ -48,8 +48,7 @@ impl About {
         let date = last_modified_date(CACHE_DIR.join("uad_lists.json"));
         let uad_list_text =
             text(format!("Documentation: v{}", date.format("%Y%m%d"))).width(Length::Units(250));
-        let last_update_text = text(settings.list_update_state.to_string())
-            .style(Theme::lupin());
+        let last_update_text = text(settings.list_update_state.to_string());
         let uad_lists_btn = button("Update")
             .on_press(Message::UpdateUadLists)
             .padding(5)
@@ -84,8 +83,7 @@ impl About {
         };
 
         #[cfg(feature = "self-update")]
-        let last_self_update_text =
-            text(self_update_text).style(style::Text::Theme::lupin());
+        let last_self_update_text = text(self_update_text).style(style::Text::Default);
 
         #[cfg(feature = "self-update")]
         let self_update_row = row()

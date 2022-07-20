@@ -1,11 +1,11 @@
 use crate::core::sync::Phone;
-use crate::core::uad_lists::{PackageState, Removal, UadList};
 use crate::core::theme::Theme;
-use crate::gui::views::settings::Settings;
+use crate::core::uad_lists::{PackageState, Removal, UadList};
 use crate::gui::style;
+use crate::gui::views::settings::Settings;
 
 use iced::pure::{button, checkbox, row, text, Element};
-use iced::{alignment, Alignment, Command, Length, Space};
+use iced::{alignment, Alignment, Command, Length, Renderer, Space};
 
 #[derive(Clone, Debug)]
 pub struct PackageRow {
@@ -50,7 +50,11 @@ impl PackageRow {
         Command::none()
     }
 
-    pub fn view(&mut self, settings: &Settings, _phone: &Phone) -> Element<Message, Theme> {
+    pub fn view(
+        &mut self,
+        settings: &Settings,
+        _phone: &Phone,
+    ) -> Element<Message, Renderer<Theme>> {
         //let trash_svg = format!("{}/resources/assets/trash.svg", env!("CARGO_MANIFEST_DIR"));
         //let restore_svg = format!("{}/resources/assets/rotate.svg", env!("CARGO_MANIFEST_DIR"));
         let button_style;
@@ -87,7 +91,7 @@ impl PackageRow {
             || settings.phone.expert_mode
         {
             selection_checkbox = checkbox("", self.selected, Message::ToggleSelection)
-                .style(style::CheckBox::SelectionEnabled);
+                .style(style::CheckBox::PackageEnabled);
 
             action_btn = button(
                 text(action_text)
@@ -97,7 +101,7 @@ impl PackageRow {
             .on_press(Message::ActionPressed);
         } else {
             selection_checkbox = checkbox("", self.selected, Message::ToggleSelection)
-                .style(style::CheckBox::SelectionDisabled);
+                .style(style::CheckBox::PackageDisabled);
 
             action_btn = button(
                 text(action_text)

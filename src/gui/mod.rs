@@ -3,17 +3,17 @@ pub mod views;
 pub mod widgets;
 
 pub use crate::core::sync::{get_device_list, Phone};
+use crate::core::theme::Theme;
 pub use crate::core::uad_lists::Package;
 use crate::core::uad_lists::{load_debloat_lists, UadListState};
 use crate::core::update::{get_latest_release, SelfUpdateState, SelfUpdateStatus};
-use crate::core::utils::{icon, perform_commands};
+use crate::core::utils::perform_commands;
 use iced::pure::widget::Text;
 use iced::pure::{button, column, container, pick_list, row, text, Pure, State};
 use iced::{
-    window::Settings as Window, Alignment, Application, Command, Element, Font, Length, Settings,
-    Space,
+    alignment, window::Settings as Window, Alignment, Application, Command, Element, Font, Length,
+    Renderer, Settings, Space,
 };
-use crate::core::theme::Theme;
 use std::collections::HashMap;
 use std::env;
 use std::path::PathBuf;
@@ -312,11 +312,17 @@ impl Application for UadGui {
         }
     }
 
-    fn view(&mut self) -> Element<Self::Message, Self::Theme> {
-        let apps_refresh_btn = button(refresh_icon())
-            .on_press(Message::RefreshButtonPressed)
-            .padding(5)
-            .style(style::Button::Refresh);
+    fn view(&mut self) -> Element<Self::Message, Renderer<Self::Theme>> {
+        let apps_refresh_btn = button(
+            Text::new('\u{E900}')
+                .font(ICONS)
+                .width(Length::Units(17))
+                .horizontal_alignment(alignment::Horizontal::Center)
+                .size(17),
+        )
+        .on_press(Message::RefreshButtonPressed)
+        .padding(5)
+        .style(style::Button::Refresh);
 
         let reboot_btn = button("Reboot")
             .on_press(Message::RebootButtonPressed)
@@ -327,35 +333,33 @@ impl Application for UadGui {
         {
             if self.settings_view.self_update_state.status == SelfUpdateStatus::Updating {
                 Text::new("Updating please wait...")
-                    .color(self.settings_view.theme.palette.normal.surface)
             } else {
                 Text::new(format!(
                     "New UAD version available {} -> {}",
                     env!("CARGO_PKG_VERSION"),
                     r.tag_name
                 ))
-                .color(self.settings_view.theme.palette.normal.surface)
             }
         } else {
             Text::new(env!("CARGO_PKG_VERSION"))
         };
 
-        let apps_btn = if self
+        let mut apps_btn = button("Apps")
+            .on_press(Message::AppsPress)
+            .padding(5)
+            .style(style::Button::Primary);
+
+        if self
             .settings_view
             .self_update_state
             .latest_release
             .is_some()
         {
-            button("Update")
+            apps_btn = button("Update")
                 .on_press(Message::AboutAction(AboutMessage::DoSelfUpdate))
                 .padding(5)
                 .style(style::Button::SelfUpdate);
-        } else {
-            button("Apps")
-                .on_press(Message::AppsPress)
-                .padding(5)
-                .style(style::Button::Primary);
-        };
+        }
 
         let about_btn = button("About")
             .on_press(Message::AboutPressed)
@@ -371,8 +375,7 @@ impl Application for UadGui {
             &self.device_list,
             self.selected_device.clone(),
             Message::DeviceSelected,
-        )
-        .style(style::PickList::Base);
+        );
 
         let device_list_text = match self.apps_view.state {
             ListState::Loading(ListLoadingState::FindingPhones) => {
@@ -474,8 +477,4 @@ impl UadGui {
     pub async fn send_self_update_message() -> SettingsMessage {
         SettingsMessage::GetLatestRelease(get_latest_release())
     }
-}
-
-fn refresh_icon() -> Text {
-    icon('\u{E900}')
 }

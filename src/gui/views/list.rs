@@ -6,16 +6,16 @@ use crate::core::uad_lists::{
 use crate::core::utils::{
     export_selection, fetch_packages, import_selection, perform_commands, update_selection_count,
 };
+use crate::gui::style;
 use std::collections::HashMap;
 use std::env;
-use crate::gui::style;
 
 use crate::gui::views::settings::Settings;
 use crate::gui::widgets::package_row::{Message as RowMessage, PackageRow};
 use iced::pure::{
     button, column, container, pick_list, row, scrollable, text, text_input, Element,
 };
-use iced::{Alignment, Command, Length, Space};
+use iced::{Alignment, Command, Length, Renderer, Space};
 
 #[derive(Debug, Default, Clone)]
 pub struct Selection {
@@ -362,7 +362,11 @@ impl List {
         }
     }
 
-    pub fn view(&mut self, settings: &Settings, phone: &Phone) -> Element<Message, Theme> {
+    pub fn view(
+        &mut self,
+        settings: &Settings,
+        phone: &Phone,
+    ) -> Element<Message, Renderer<Theme>> {
         match self.state {
             State::Loading(LoadingState::DownloadingList) => {
                 let text = "Downloading latest UAD lists from Github. Please wait...";
@@ -396,28 +400,23 @@ impl List {
                     self.selected_user,
                     Message::UserSelected,
                 )
-                .width(Length::Units(85))
-                .style(style::PickList::Base);
+                .width(Length::Units(85));
 
                 let divider = Space::new(Length::Fill, Length::Shrink);
 
                 let list_picklist =
-                    pick_list(&UadList::ALL[..], self.selected_list, Message::ListSelected)
-                        .style(style::PickList::Base);
-
+                    pick_list(&UadList::ALL[..], self.selected_list, Message::ListSelected);
                 let package_state_picklist = pick_list(
                     &PackageState::ALL[..],
                     self.selected_package_state,
                     Message::PackageStateSelected,
-                )
-                .style(style::PickList::Base);
+                );
 
                 let removal_picklist = pick_list(
                     &Removal::ALL[..],
                     self.selected_removal,
                     Message::RemovalSelected,
-                )
-                .style(style::PickList::Base);
+                );
 
                 let control_panel = row()
                     .width(Length::Fill)
@@ -581,7 +580,11 @@ impl List {
     }
 }
 
-fn waiting_view<'a>(settings: &Settings, displayed_text: &str, btn: bool) -> Element<'a, Message> {
+fn waiting_view<'a>(
+    _settings: &Settings,
+    displayed_text: &str,
+    btn: bool,
+) -> Element<'a, Message, Renderer<Theme>> {
     let col = if btn {
         let no_internet_btn = button("No internet?")
             .padding(5)

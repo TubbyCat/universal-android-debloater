@@ -1,12 +1,11 @@
 use crate::core::theme::Theme;
-use iced::{text, application, button, checkbox, container, pick_list, scrollable, text_input};
-use iced::{Background, Color};
 use iced::overlay::menu;
+use iced::{application, button, checkbox, container, pick_list, scrollable, text, text_input};
+use iced::{Background, Color};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Application {
     Default,
-    Custom(fn(Theme) -> application::Appearance),
 }
 
 impl Default for Application {
@@ -18,15 +17,10 @@ impl Default for Application {
 impl application::StyleSheet for Theme {
     type Style = Application;
 
-    fn appearance(&self, style: Self::Style) -> application::Appearance {
-        let palette = self.palette;
-
-        match style {
-            Application::Default => application::Appearance {
-                background_color: palette.base.background,
-                text_color: palette.base.foreground,
-            },
-            Application::Custom(f) => f(*self),
+    fn appearance(&self, _style: Self::Style) -> application::Appearance {
+        Application::Default => application::Appearance {
+            background_color: self.palette.base.background,
+            text_color: palette.base.foreground,
         }
     }
 }
@@ -35,7 +29,7 @@ impl application::StyleSheet for Theme {
 pub enum Container {
     Content,
     Navigation,
-    Description
+    Description,
 }
 
 impl Default for Container {
@@ -49,23 +43,23 @@ impl container::StyleSheet for Theme {
 
     fn appearance(&self, style: Self::Style) -> container::Appearance {
         match style {
-            Content => container::Appearance {
+            Container::Content => container::Appearance {
                 background: Some(Background::Color(self.palette.base.background)),
                 text_color: Some(self.palette.bright.surface),
                 ..container::Appearance::default()
             },
-            Navigation => container::Appearance {
+            Container::Navigation => container::Appearance {
                 background: Some(Background::Color(self.palette.base.foreground)),
                 text_color: Some(self.palette.bright.surface),
                 ..container::Appearance::default()
             },
-            Description => container::Appearance {
+            Container::Description => container::Appearance {
                 background: Some(Background::Color(self.palette.base.foreground)),
                 text_color: Some(self.palette.bright.surface),
                 border_radius: 5.0,
                 border_width: 0.0,
                 border_color: self.palette.base.background,
-            }
+            },
         }
     }
 }
@@ -79,7 +73,7 @@ pub enum Button {
     UninstallPackage,
     RestorePackage,
     NormalPackage,
-    SelectedPackage
+    SelectedPackage,
 }
 
 impl Default for Button {
@@ -105,8 +99,8 @@ impl button::StyleSheet for Theme {
         };
 
         let from_pair = |pair: iced::Color| button::Appearance {
-            background: Some(pair.into()),
-            text_color: pair,
+            background: Some(Background::Color(palette.base.foreground)),
+            text_color: pair.into(),
             ..appearance
         };
 
@@ -116,7 +110,6 @@ impl button::StyleSheet for Theme {
             Button::Refresh => from_pair(palette.bright.secondary),
             Button::SelfUpdate => from_pair(palette.bright.primary),
             Button::UninstallPackage => from_pair(palette.bright.secondary),
-            Button::RestorePackage => from_pair(palette.bright.secondary),
             Button::RestorePackage => from_pair(palette.bright.secondary),
             Button::NormalPackage => button::Appearance {
                 background: Some(Background::Color(palette.base.foreground)),
@@ -136,7 +129,7 @@ impl button::StyleSheet for Theme {
                 border_width: 0.0,
                 border_color: palette.normal.primary,
                 ..appearance
-            }
+            },
         }
     }
 
@@ -149,39 +142,39 @@ impl button::StyleSheet for Theme {
             Button::Unavailable => Some(Background::Color(palette.normal.primary)),
             Button::SelfUpdate => Some(Background::Color(palette.normal.surface)),
             Button::Refresh => Some(Background::Color(palette.normal.surface)),
-            Button::UninstallPackage|
-            Button::RestorePackage => Some(Background::Color(palette.normal.primary)),
-            _ => None
+            Button::UninstallPackage | Button::RestorePackage => {
+                Some(Background::Color(palette.normal.primary))
+            }
+            _ => None,
         };
 
         match style {
             Button::Primary => button::Appearance {
-                background: background,
+                background,
                 text_color: palette.bright.primary,
                 ..active
             },
             Button::Unavailable => button::Appearance {
-                background: background,
+                background,
                 text_color: palette.normal.error,
                 ..active
             },
             Button::SelfUpdate => button::Appearance {
-                background: background,
+                background,
                 text_color: palette.bright.secondary,
                 ..active
             },
             Button::Refresh => button::Appearance {
-                background: background,
+                background,
                 text_color: self.palette.bright.primary,
                 ..active
             },
-            Button::UninstallPackage|
-            Button::RestorePackage => button::Appearance {
-                background: background,
+            Button::UninstallPackage | Button::RestorePackage => button::Appearance {
+                background,
                 text_color: palette.bright.primary,
                 ..active
             },
-            NormalPackage => button::Appearance {
+            Button::NormalPackage => button::Appearance {
                 background: Some(Background::Color(Color {
                     a: 0.30,
                     ..palette.normal.primary
@@ -189,7 +182,7 @@ impl button::StyleSheet for Theme {
                 text_color: palette.bright.primary,
                 ..active
             },
-            SelectedPackage => button::Appearance { ..active },
+            Button::SelectedPackage => button::Appearance { ..active },
         }
     }
 
@@ -198,7 +191,7 @@ impl button::StyleSheet for Theme {
         let palette = self.palette;
 
         match style {
-            RestorePackage => button::Appearance {
+            Button::RestorePackage => button::Appearance {
                 background: Some(Background::Color(Color {
                     a: 0.05,
                     ..palette.normal.primary
@@ -209,7 +202,7 @@ impl button::StyleSheet for Theme {
                 },
                 ..active
             },
-            UninstallPackage => button::Appearance {
+            Button::UninstallPackage => button::Appearance {
                 background: Some(Background::Color(Color {
                     a: 0.01,
                     ..palette.bright.error
@@ -220,14 +213,14 @@ impl button::StyleSheet for Theme {
                 },
                 ..active
             },
-            _ => button::Appearance {
-                ..active
-            }
+            _ => button::Appearance { ..active },
         }
     }
 
     fn pressed(&self, style: Self::Style) -> button::Appearance {
-        button::Appearance { ..self.active(style) }
+        button::Appearance {
+            ..self.active(style)
+        }
     }
 }
 
@@ -239,8 +232,8 @@ impl Default for Scrollable {
 
 #[derive(Debug, Clone, Copy)]
 pub enum Scrollable {
-   Description,
-   Packages, 
+    Description,
+    Packages,
 }
 
 impl scrollable::StyleSheet for Theme {
@@ -248,7 +241,7 @@ impl scrollable::StyleSheet for Theme {
 
     fn active(&self, style: Self::Style) -> scrollable::Scrollbar {
         match style {
-            Description => scrollable::Scrollbar {
+            Scrollable::Description => scrollable::Scrollbar {
                 background: Some(Background::Color(self.palette.base.foreground)),
                 border_radius: 5.0,
                 border_width: 0.0,
@@ -260,7 +253,7 @@ impl scrollable::StyleSheet for Theme {
                     border_color: Color::TRANSPARENT,
                 },
             },
-            Packages => scrollable::Scrollbar {
+            Scrollable::Packages => scrollable::Scrollbar {
                 background: Some(Background::Color(self.palette.base.background)),
                 border_radius: 0.0,
                 border_width: 0.0,
@@ -271,13 +264,15 @@ impl scrollable::StyleSheet for Theme {
                     border_width: 0.0,
                     border_color: Color::TRANSPARENT,
                 },
-            }          
+            },
         }
     }
 
     fn hovered(&self, style: Self::Style) -> scrollable::Scrollbar {
         scrollable::Scrollbar {
-            scroller: scrollable::Scroller { ..self.active(style).scroller },
+            scroller: scrollable::Scroller {
+                ..self.active(style).scroller
+            },
             ..self.active(style)
         }
     }
@@ -296,7 +291,7 @@ pub enum CheckBox {
     PackageEnabled,
     PackageDisabled,
     SettingsEnabled,
-    SettingsDisabled
+    SettingsDisabled,
 }
 
 impl Default for CheckBox {
@@ -308,9 +303,9 @@ impl Default for CheckBox {
 impl checkbox::StyleSheet for Theme {
     type Style = CheckBox;
 
-    fn active(&self, style: Self::Style, is_checked: bool) -> checkbox::Appearance {        
+    fn active(&self, style: Self::Style, _is_checked: bool) -> checkbox::Appearance {
         match style {
-            CheckBox::PackageEnabled=> checkbox::Appearance {
+            CheckBox::PackageEnabled => checkbox::Appearance {
                 background: Background::Color(self.palette.base.background),
                 checkmark_color: self.palette.bright.primary,
                 border_radius: 5.0,
@@ -384,7 +379,7 @@ impl checkbox::StyleSheet for Theme {
 
 #[derive(Debug, Clone, Copy)]
 pub enum TextInput {
-    Base
+    Base,
 }
 
 impl Default for TextInput {
@@ -437,7 +432,7 @@ impl text_input::StyleSheet for Theme {
 
 #[derive(Debug, Clone, Copy)]
 pub enum PickList {
-    Base
+    Base,
 }
 
 impl Default for PickList {
@@ -494,7 +489,6 @@ impl pick_list::StyleSheet for Theme {
 pub enum Text {
     Default,
     Color(Color),
-    Custom(fn(&Theme) -> text::Appearance),
 }
 
 impl Default for Text {
@@ -516,7 +510,6 @@ impl text::StyleSheet for Theme {
         match style {
             Text::Default => Default::default(),
             Text::Color(c) => text::Appearance { color: Some(c) },
-            Text::Custom(f) => f(self),
         }
     }
 }
