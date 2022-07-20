@@ -390,8 +390,7 @@ impl List {
                     &self.input_value,
                     Message::SearchInputChanged,
                 )
-                .padding(5)
-                .style(style::TextInput::Base);
+                .padding(5);
 
                 // let package_amount = text(format!("{} packages found", packages.len()));
 
